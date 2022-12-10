@@ -77,11 +77,11 @@ public class FlowUtil {
                         ((ArrayNode) flow.subflows.get(subflowType).get("instances")).add(n);
                     }
                     if (container != null) {
-                        ((ObjectNode) container.get("nodes")).put(n.get("id").asText(), n);
+                        ((ObjectNode) container.get("nodes")).set(n.get("id").asText(), n);
                     }
                 } else {
                     if (container != null) {
-                        ((ObjectNode) container.get("configs")).put(n.get("id").asText(), n);
+                        ((ObjectNode) container.get("configs")).set(n.get("id").asText(), n);
                     } else {
                         flow.configs.put(n.get("id").asText(), n);
                         flow.configs.get(n.get("id").asText()).putArray("_users");
@@ -105,7 +105,7 @@ public class FlowUtil {
         for (ObjectNode n : linkOutNodes) {
             Map<String, Boolean> links = linkWires.get(n.get("id").asText());
             List<String> targets = new ArrayList<>(links.keySet());
-            n.put("wires", new ObjectMapper().valueToTree(targets));
+            n.set("wires", new ObjectMapper().valueToTree(targets));
         }
 
         Map<String, JsonNode> addedTabs = new HashMap<>();
@@ -131,9 +131,9 @@ public class FlowUtil {
                     }
                     if (addedTabs.containsKey(n.get("z").asText())) {
                         if (n.has("x") && n.has("y")) {
-                            ((ObjectNode) addedTabs.get(n.get("z").asText()).get("nodes")).put(n.get("id").asText(), n);
+                            ((ObjectNode) addedTabs.get(n.get("z").asText()).get("nodes")).set(n.get("id").asText(), n);
                         } else {
-                            ((ObjectNode) addedTabs.get(n.get("z").asText()).get("configs")).put(n.get("id").asText(), n);
+                            ((ObjectNode) addedTabs.get(n.get("z").asText()).get("configs")).set(n.get("id").asText(), n);
                         }
                     }
                 }
