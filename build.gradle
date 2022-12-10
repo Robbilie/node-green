@@ -1,0 +1,85 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.1'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+group = 'io.github.robbilie'
+archivesBaseName = 'node-green'
+version = '0.0.1'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            pom {
+                name = 'node-green'
+                description = 'node-green is a spin on node-red\\\'s runtime implemented in java'
+                url = 'https://github.com/Robbilie/node-green'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'http://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Robbilie'
+                        name = 'Robert Schuh'
+                        email = 'github@eneticum.de'
+                    }
+                }
+                scm {
+                    connection = 'scm:git://github.com/Robbilie/node-green.git'
+                    developerConnection = 'scm:git://github.com/Robbilie/node-green.git'
+                    url = 'https://github.com/Robbilie/node-green'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
