@@ -19,6 +19,11 @@ test {
     useJUnitPlatform()
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 group = 'io.github.robbilie'
 archivesBaseName = 'node-green'
 version = '0.0.1'
@@ -26,7 +31,16 @@ version = '0.0.1'
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = "node-green"
             from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
             pom {
                 name = 'node-green'
                 description = 'node-green is a spin on node-red\\\'s runtime implemented in java'
@@ -65,21 +79,12 @@ publishing {
     }
 }
 
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
 signing {
     sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
