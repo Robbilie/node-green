@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.robbilie.nodegreen.Context;
 import io.github.robbilie.nodegreen.Flow;
+import io.github.robbilie.nodegreen.INode;
 import io.github.robbilie.nodegreen.Node;
 
 import java.util.HashMap;
@@ -19,6 +20,10 @@ public class SelectThemeNode extends Node {
             Context context = this.getContext();
             msg.put("payload", "test");
             this.send(msg);
+        });
+        this.onClose((INode node) -> {
+            System.out.println("select theme node close");
+            SelectThemeNode.nodes.remove(this.id);
         });
     }
 }

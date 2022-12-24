@@ -13,7 +13,7 @@ public class Node implements INode {
     String z;
     String g;
     List<Consumer<ObjectNode>> inputCallbacks = new ArrayList<>();
-    List<Consumer<ObjectNode>> closeCallbacks = new ArrayList<>();
+    List<Consumer<INode>> closeCallbacks = new ArrayList<>();
     String name;
     Flow flow;
     List<List<String>> wires = new ArrayList<>();
@@ -62,7 +62,7 @@ public class Node implements INode {
         this.inputCallbacks.add(callback);
     }
 
-    public void onClose(Consumer<ObjectNode> callback) {
+    public void onClose(Consumer<INode> callback) {
         this.closeCallbacks.add(callback);
     }
 
@@ -90,10 +90,6 @@ public class Node implements INode {
         this.closeCallbacks = new ArrayList<>();
     }
 
-    void close() {
-
-    }
-
     public void send(ObjectNode msg) {
         this.send(Collections.singletonList(msg));
     }
@@ -117,6 +113,18 @@ public class Node implements INode {
 
     public void receive(ObjectNode msg) {
         this.emitInput(msg);
+    }
+
+    public void close() {
+        this.close(false);
+    }
+
+    public void close(Boolean removed) {
+        for (int i = 0; i < this.closeCallbacks.size(); i++) {
+            Consumer<INode> callback = this.closeCallbacks.get(i);
+            callback.accept(this);
+        }
+        this.removeAllInputListeners();
     }
 
 }

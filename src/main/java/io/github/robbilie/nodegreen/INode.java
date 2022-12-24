@@ -10,6 +10,8 @@ public interface INode {
     void send(List<ObjectNode> msgs);
     void receive(ObjectNode msg);
     void onInput(Consumer<ObjectNode> callback);
-    void onClose(Consumer<ObjectNode> callback);
+    void onClose(Consumer<INode> callback);
     Context getContext();
+    void close();
+    void close(Boolean removed);
 }

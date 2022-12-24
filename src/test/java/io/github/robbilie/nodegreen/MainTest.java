@@ -30,11 +30,21 @@ public class MainTest {
             Flow flow = Flow.create(fc, fc.flows.get("global"));
             flow.start();
 
+            System.out.println(SelectThemeNode.nodes.size());
 
             for (String id : SelectThemeNode.nodes.keySet()) {
                 ObjectNode msg = new ObjectMapper().createObjectNode();
                 SelectThemeNode.nodes.get(id).receive(msg);
             }
+
+            flow.stop();
+
+            for (String id : SelectThemeNode.nodes.keySet()) {
+                ObjectNode msg = new ObjectMapper().createObjectNode();
+                SelectThemeNode.nodes.get(id).receive(msg);
+            }
+
+            System.out.println(SelectThemeNode.nodes.size());
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
