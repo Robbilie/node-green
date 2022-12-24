@@ -15,7 +15,7 @@ public class MainTest {
 
     @Test
     void mainTest() {
-        String json = "[{\"x\":0,\"y\":0,\"z\":\"global\",\"id\":\"1234\",\"type\":\"select_theme\",\"wires\":[[\"5678\"]]},{\"x\":0,\"y\":0,\"z\":\"global\",\"id\":\"5678\",\"type\":\"composition\",\"composition\":\"007\",\"wires\":[]}]";
+        String json = "[{\"id\":\"global\",\"type\":\"tab\",\"label\":\"Global\",\"disabled\":false,\"info\":\"\",\"env\":[]},{\"x\":0,\"y\":0,\"z\":\"global\",\"id\":\"1234\",\"type\":\"select_theme\",\"wires\":[[\"5678\"]]},{\"x\":0,\"y\":0,\"z\":\"global\",\"id\":\"5678\",\"type\":\"composition\",\"composition\":\"007\",\"wires\":[]}]";
 
         try {
             List<JsonNode> config = new ObjectMapper().readValue(json, new TypeReference<List<JsonNode>>() {});
