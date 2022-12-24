@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class MainTest {
 
     @Test
@@ -30,7 +32,7 @@ public class MainTest {
             Flow flow = Flow.create(fc, fc.flows.get("global"));
             flow.start();
 
-            System.out.println(SelectThemeNode.nodes.size());
+            assertEquals(1, SelectThemeNode.nodes.size());
 
             for (String id : SelectThemeNode.nodes.keySet()) {
                 ObjectNode msg = new ObjectMapper().createObjectNode();
@@ -44,7 +46,7 @@ public class MainTest {
                 SelectThemeNode.nodes.get(id).receive(msg);
             }
 
-            System.out.println(SelectThemeNode.nodes.size());
+            assertEquals(0, SelectThemeNode.nodes.size());
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
