@@ -37,11 +37,8 @@ public class MainTest {
             RED.nodes.registerType("composition", CompositionNode::new);
             RED.nodes.registerType("select_theme", SelectThemeNode::new);
 
-            ObjectNode config = FlowUtil.parseConfig(flowsJson.flows);
-
-            System.out.println(config);
-
-            RED.flows.start(config);
+            RED.flows.setFlows(flowsJson.flows);
+            RED.flows.startFlows();
 
             assertEquals(1, SelectThemeNode.nodes.size());
 

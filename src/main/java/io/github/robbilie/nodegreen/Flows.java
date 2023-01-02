@@ -1,5 +1,6 @@
 package io.github.robbilie.nodegreen;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
@@ -10,9 +11,12 @@ public class Flows implements IFlow {
     public List<String> activeFlowIds = new ArrayList<>();
     ObjectNode activeFlowConfig;
     Map<String, String> activeNodesToFlow = new HashMap<>();
-    public void start(ObjectNode newFlowConfig) {
+
+    public void setFlows(List<JsonNode> flows) {
+        this.activeFlowConfig = FlowUtil.parseConfig(flows);
+    }
+    public void startFlows() {
         this.stop();
-        this.activeFlowConfig = newFlowConfig;
         this.activeFlows = new HashMap<>();
         this.activeFlowIds = new ArrayList<>();
         this.activeNodesToFlow = new HashMap<>();

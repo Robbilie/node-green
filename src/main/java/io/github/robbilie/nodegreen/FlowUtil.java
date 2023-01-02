@@ -1,6 +1,5 @@
 package io.github.robbilie.nodegreen;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
 public class FlowUtil {
     private static final Pattern subflowInstanceRE = Pattern.compile("^subflow:(.+)$");
 
-    public static ObjectNode parseConfig(List<JsonNode> input) throws JsonProcessingException {
+    public static ObjectNode parseConfig(List<JsonNode> input) {
         ObjectNode flow = new ObjectMapper().createObjectNode();
         flow.putObject("allNodes");
         flow.putObject("subflows");
