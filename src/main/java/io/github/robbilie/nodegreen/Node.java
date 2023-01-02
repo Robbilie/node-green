@@ -18,7 +18,6 @@ public class Node implements INode {
     Flow flow;
     List<List<String>> wires = new ArrayList<>();
     Integer wireCount = 0;
-    Context context;
     public Node(Flow flow, JsonNode config) {
         this.config = config;
         this.id = config.get("id").asText();
@@ -53,13 +52,6 @@ public class Node implements INode {
         }
     }
 
-    public Context getContext() {
-        if (this.context == null) {
-            this.context = new Context();
-        }
-        return this.context;
-    }
-
     public void onInput(Consumer<ObjectNode> callback) {
         this.inputCallbacks.add(callback);
     }
@@ -70,8 +62,7 @@ public class Node implements INode {
 
     void emitInput(ObjectNode arg) {
         int c = this.inputCallbacks.size();
-        for (int i = 0; i < c; i++) {
-            Consumer<ObjectNode> cb = this.inputCallbacks.get(i);
+        for (Consumer<ObjectNode> cb : this.inputCallbacks) {
             cb.accept(arg);
         }
     }
@@ -104,8 +95,8 @@ public class Node implements INode {
             List<String> wires = this.wires.get(i);
             if (i < msgs.size()) {
                 ObjectNode msg = msgs.get(i);
-                for (int j = 0; j < wires.size(); j++) {
-                    sendEvents.add(new SendEvent(msg, this.id, this, i, wires.get(j), null, msgSent));
+                for (String wire : wires) {
+                    sendEvents.add(new SendEvent(msg, this.id, this, i, wire, null, msgSent));
                     msgSent = true;
                 }
             }
@@ -122,8 +113,7 @@ public class Node implements INode {
     }
 
     public void close(Boolean removed) {
-        for (int i = 0; i < this.closeCallbacks.size(); i++) {
-            Consumer<INode> callback = this.closeCallbacks.get(i);
+        for (Consumer<INode> callback : this.closeCallbacks) {
             callback.accept(this);
         }
         this.removeAllInputListeners();

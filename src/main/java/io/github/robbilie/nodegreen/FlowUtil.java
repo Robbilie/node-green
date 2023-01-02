@@ -119,9 +119,9 @@ public class FlowUtil {
                         ((ObjectNode)flow.get("configs"))[n[prop]]._users.push(n.id)
                     }
                 }*/
-                if (n.has("z") && !((ObjectNode)flow.get("subflows")).has(n.get("z").asText())) {
+                if (n.has("z") && !flow.get("subflows").has(n.get("z").asText())) {
 
-                    if (!((ObjectNode)flow.get("flows")).has(n.get("z").asText())) {
+                    if (!flow.get("flows").has(n.get("z").asText())) {
                         ObjectNode tab = new ObjectMapper().createObjectNode();
                         tab.put("type", "tab");
                         tab.put("id", n.get("z").asText());

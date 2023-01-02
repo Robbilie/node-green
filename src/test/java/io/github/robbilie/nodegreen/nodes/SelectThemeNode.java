@@ -2,7 +2,6 @@ package io.github.robbilie.nodegreen.nodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.robbilie.nodegreen.Context;
 import io.github.robbilie.nodegreen.Flow;
 import io.github.robbilie.nodegreen.INode;
 import io.github.robbilie.nodegreen.Node;
@@ -17,7 +16,6 @@ public class SelectThemeNode extends Node {
         super(flow, config);
         SelectThemeNode.nodes.put(this.id, this);
         this.onInput((ObjectNode msg) -> {
-            Context context = this.getContext();
             msg.put("payload", "test");
             this.send(msg);
         });

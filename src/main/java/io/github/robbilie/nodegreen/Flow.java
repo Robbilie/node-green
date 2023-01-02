@@ -5,31 +5,32 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 
-public class Flow {
-    public static Flow create(Flow parent, ObjectNode global, ObjectNode config) {
+public class Flow implements IFlow {
+    public static Flow create(IFlow parent, ObjectNode global, ObjectNode config) {
         return new Flow(parent, global, config);
     }
-    public static Flow create(ObjectNode global) {
-        return new Flow(global);
+    public static Flow create(IFlow parent, ObjectNode global) {
+        return new Flow(parent, global);
     }
 
-    Flow parent;
+    IFlow parent;
 
     ObjectNode global;
     ObjectNode flow;
     Map<String, INode> activeNodes = new HashMap<>();
 
     Boolean isGlobalFlow;
-    public Flow(ObjectNode global) {
+    public Flow(IFlow parent, ObjectNode global) {
+        this.parent = parent;
         this.isGlobalFlow = true;
         this.global = global;
         this.flow = global;
     }
-    public Flow(Flow parent, ObjectNode global, ObjectNode flow) {
+    public Flow(IFlow parent, ObjectNode global, ObjectNode flow) {
+        this.parent = parent;
         this.isGlobalFlow = false;
         this.global = global;
         this.flow = flow;
-        this.parent = parent;
     }
 
     public void start() {
@@ -70,8 +71,8 @@ public class Flow {
     }
 
     public static void handleOnSend(Flow flow, List<SendEvent> sendEvents) {
-        for (int i = 0; i < sendEvents.size(); i++) {
-            Flow.handlePreRoute(flow, sendEvents.get(i));
+        for (SendEvent sendEvent : sendEvents) {
+            Flow.handlePreRoute(flow, sendEvent);
         }
     }
 
@@ -139,6 +140,10 @@ public class Flow {
                 Flow.stopNode(node, removed);
             }
         });
+    }
+
+    public Map<String, INode> getActiveNodes() {
+        return this.activeNodes;
     }
 
     public static void stopNode(INode node, Boolean removed) {

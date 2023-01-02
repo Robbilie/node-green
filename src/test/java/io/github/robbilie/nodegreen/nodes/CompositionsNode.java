@@ -1,8 +1,6 @@
 package io.github.robbilie.nodegreen.nodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.robbilie.nodegreen.Context;
 import io.github.robbilie.nodegreen.Flow;
 import io.github.robbilie.nodegreen.Node;
 

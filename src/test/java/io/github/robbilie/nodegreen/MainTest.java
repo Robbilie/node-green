@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,8 +21,8 @@ public class MainTest {
     @Test
     void mainTest() {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("flows.json").getFile());
-        String json = null;
+        File file = new File(Objects.requireNonNull(classLoader.getResource("flows.json")).getFile());
+        String json;
         try {
             json = new String(Files.readAllBytes(file.toPath()));
         } catch (IOException e) {
@@ -40,7 +41,7 @@ public class MainTest {
 
             System.out.println(config);
 
-            RED.start(config);
+            RED.flows.start(config);
 
             assertEquals(1, SelectThemeNode.nodes.size());
 
@@ -49,7 +50,7 @@ public class MainTest {
                 SelectThemeNode.nodes.get(id).receive(msg);
             }
 
-            RED.stop();
+            RED.flows.stop();
 
             for (String id : SelectThemeNode.nodes.keySet()) {
                 ObjectNode msg = new ObjectMapper().createObjectNode();

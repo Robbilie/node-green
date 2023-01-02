@@ -1,7 +1,7 @@
 {
   "flows": [
     {
-      "id": "defaultAssets",
+      "id": "default-assets",
       "type": "assets",
       "assets": [
         {
@@ -11,7 +11,7 @@
       ]
     },
     {
-      "id": "defaultCompositions",
+      "id": "default-compositions",
       "type": "compositions",
       "compositions": [
         {
@@ -21,9 +21,9 @@
       ]
     },
     {
-      "id": "main",
+      "id": "default",
       "type": "tab",
-      "label": "Main",
+      "label": "default",
       "disabled": false,
       "info": "",
       "env": []
@@ -34,18 +34,18 @@
       "wires": [["5678"]],
       "x": 210,
       "y": 280,
-      "z": "main"
+      "z": "default"
     },
     {
       "id": "5678",
       "type": "composition",
-      "assets": "defaultAssets",
-      "compositions": "defaultCompositions",
+      "assets": "default-assets",
+      "compositions": "default-compositions",
       "composition": "007",
       "wires": [],
       "x": 510,
       "y": 280,
-      "z": "main"
+      "z": "default"
     }
   ],
   "rev": ""
