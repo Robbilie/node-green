@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-public class TypeRegistry {
+public class Nodes {
     public void registerType(String name, BiFunction<Flow, JsonNode, INode> fn) {
         this.registry.put(name, fn);
     }

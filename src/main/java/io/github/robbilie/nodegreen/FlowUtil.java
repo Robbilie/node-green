@@ -16,14 +16,14 @@ import java.util.regex.Pattern;
 public class FlowUtil {
     private static final Pattern subflowInstanceRE = Pattern.compile("^subflow:(.+)$");
 
-    public static FlowConfig parseConfig(List<JsonNode> input) throws JsonProcessingException {
-        FlowConfig flow = new FlowConfig();
-        flow.allNodes = new HashMap<>();
-        flow.subflows = new HashMap<>();
-        flow.configs = new HashMap<>();
-        flow.flows = new HashMap<>();
-        flow.groups = new HashMap<>();
-        flow.missingTypes = new ArrayList<>();
+    public static ObjectNode parseConfig(List<JsonNode> input) throws JsonProcessingException {
+        ObjectNode flow = new ObjectMapper().createObjectNode();
+        flow.putObject("allNodes");
+        flow.putObject("subflows");
+        flow.putObject("configs");
+        flow.putObject("flows");
+        flow.putObject("groups");
+        //flow.putArray("missingTypes");
 
         List<ObjectNode> config = new ArrayList<>();
         for (JsonNode n : input) {
@@ -31,24 +31,24 @@ public class FlowUtil {
         }
 
         for (ObjectNode n : config) {
-            flow.allNodes.put(n.get("id").asText(), n.deepCopy());
+            ((ObjectNode)flow.get("allNodes")).put(n.get("id").asText(), n.deepCopy());
             if (n.get("type").asText().equals("tab")) {
-                flow.flows.put(n.get("id").asText(), n);
-                flow.flows.get(n.get("id").asText()).putObject("subflows");
-                flow.flows.get(n.get("id").asText()).putObject("configs");
-                flow.flows.get(n.get("id").asText()).putObject("nodes");
+                ((ObjectNode)flow.get("flows")).put(n.get("id").asText(), n);
+                ((ObjectNode)flow.get("flows").get(n.get("id").asText())).putObject("subflows");
+                ((ObjectNode)flow.get("flows").get(n.get("id").asText())).putObject("configs");
+                ((ObjectNode)flow.get("flows").get(n.get("id").asText())).putObject("nodes");
             }
             if (n.get("type").asText().equals("group")) {
-                flow.groups.put(n.get("id").asText(), n);
+                ((ObjectNode)flow.get("groups")).put(n.get("id").asText(), n);
             }
         }
 
         for (ObjectNode n : config) {
             if (n.get("type").asText().equals("subflow")) {
-                flow.subflows.put(n.get("id").asText(), n);
-                flow.subflows.get(n.get("id").asText()).putObject("configs");
-                flow.subflows.get(n.get("id").asText()).putObject("nodes");
-                flow.subflows.get(n.get("id").asText()).putArray("instances");
+                ((ObjectNode)flow.get("subflows")).put(n.get("id").asText(), n);
+                ((ObjectNode)flow.get("subflows").get(n.get("id").asText())).putObject("configs");
+                ((ObjectNode)flow.get("subflows").get(n.get("id").asText())).putObject("nodes");
+                ((ObjectNode)flow.get("subflows").get(n.get("id").asText())).putArray("instances");
             }
         }
 
@@ -58,23 +58,25 @@ public class FlowUtil {
             if (!n.get("type").asText().equals("subflow") && !n.get("type").asText().equals("tab") && !n.get("type").asText().equals("group")) {
                 Matcher subflowDetails = subflowInstanceRE.matcher(n.get("type").asText());
 
-                if ((subflowDetails.matches() && !flow.subflows.containsKey(subflowDetails.group(1))) ||
+                if ((subflowDetails.matches() && !flow.get("subflows").has(subflowDetails.group(1))) ||
                         (!subflowDetails.matches() && !RED.nodes.containsKey(n.get("type").asText()))) {
-                    if (!flow.missingTypes.contains(n.get("type").asText())) {
-                        flow.missingTypes.add(n.get("type").asText());
-                    }
+                    //if (!((ArrayNode)flow.get("missingTypes")).to.contains(n.get("type").asText())) {
+                    //    flow.missingTypes.add(n.get("type").asText());
+                    //}
                 }
                 ObjectNode container = null;
-                if (flow.flows.containsKey(n.get("z").asText())) {
-                    container= flow.flows.get(n.get("z").asText());
-                } else if (flow.subflows.containsKey(n.get("z").asText())) {
-                    container = flow.subflows.get(n.get("z").asText());
+                if (n.has("z")) {
+                    if (flow.get("flows").has(n.get("z").asText())) {
+                        container = (ObjectNode)flow.get("flows").get(n.get("z").asText());
+                    } else if (flow.get("subflows").has(n.get("z").asText())) {
+                        container = (ObjectNode)flow.get("subflows").get(n.get("z").asText());
+                    }
                 }
                 if (n.has("x") && n.has("y")) {
                     if (subflowDetails.matches()) {
                         String subflowType = subflowDetails.group(1);
                         n.put("subflow", subflowType);
-                        ((ArrayNode) flow.subflows.get(subflowType).get("instances")).add(n);
+                        ((ArrayNode) flow.get("subflows").get(subflowType).get("instances")).add(n);
                     }
                     if (container != null) {
                         ((ObjectNode) container.get("nodes")).set(n.get("id").asText(), n);
@@ -83,8 +85,8 @@ public class FlowUtil {
                     if (container != null) {
                         ((ObjectNode) container.get("configs")).set(n.get("id").asText(), n);
                     } else {
-                        flow.configs.put(n.get("id").asText(), n);
-                        flow.configs.get(n.get("id").asText()).putArray("_users");
+                        ((ObjectNode)flow.get("configs")).put(n.get("id").asText(), n);
+                        ((ObjectNode)(flow.get("configs")).get(n.get("id").asText())).putArray("_users");
                     }
                 }
                 if (n.get("type").asText().equals("link in") && n.has("links")) {
@@ -112,21 +114,21 @@ public class FlowUtil {
         for (ObjectNode n : config) {
             if (!n.get("type").asText().equals("subflow") && !n.get("type").asText().equals("tab") && !n.get("type").asText().equals("group")) {
                 /*for (JsonNode prop : n) {
-                    if (n.hasOwnProperty(prop) && prop !== 'id' && prop !== 'wires' && prop !== 'type' && prop !== '_users' && flow.configs.hasOwnProperty(n[prop])) {
+                    if (n.hasOwnProperty(prop) && prop !== 'id' && prop !== 'wires' && prop !== 'type' && prop !== '_users' && ((ObjectNode)flow.get("configs")).hasOwnProperty(n[prop])) {
                         // This property references a global config node
-                        flow.configs[n[prop]]._users.push(n.id)
+                        ((ObjectNode)flow.get("configs"))[n[prop]]._users.push(n.id)
                     }
                 }*/
-                if (n.has("z") && !flow.subflows.containsKey(n.get("z").asText())) {
+                if (n.has("z") && !((ObjectNode)flow.get("subflows")).has(n.get("z").asText())) {
 
-                    if (!flow.flows.containsKey(n.get("z").asText())) {
+                    if (!((ObjectNode)flow.get("flows")).has(n.get("z").asText())) {
                         ObjectNode tab = new ObjectMapper().createObjectNode();
                         tab.put("type", "tab");
                         tab.put("id", n.get("z").asText());
                         tab.putObject("subflows");
                         tab.putObject("configs");
                         tab.putObject("nodes");
-                        flow.flows.put(n.get("z").asText(), tab);
+                        ((ObjectNode)flow.get("flows")).put(n.get("z").asText(), tab);
                         addedTabs.put(n.get("z").asText(), tab);
                     }
                     if (addedTabs.containsKey(n.get("z").asText())) {

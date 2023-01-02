@@ -1,0 +1,52 @@
+{
+  "flows": [
+    {
+      "id": "defaultAssets",
+      "type": "assets",
+      "assets": [
+        {
+          "id": "a",
+          "url":"https://"
+        }
+      ]
+    },
+    {
+      "id": "defaultCompositions",
+      "type": "compositions",
+      "compositions": [
+        {
+          "id": "a",
+          "actuators": []
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "type": "tab",
+      "label": "Main",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "1234",
+      "type": "select_theme",
+      "wires": [["5678"]],
+      "x": 210,
+      "y": 280,
+      "z": "main"
+    },
+    {
+      "id": "5678",
+      "type": "composition",
+      "assets": "defaultAssets",
+      "compositions": "defaultCompositions",
+      "composition": "007",
+      "wires": [],
+      "x": 510,
+      "y": 280,
+      "z": "main"
+    }
+  ],
+  "rev": ""
+}

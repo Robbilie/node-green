@@ -35,7 +35,9 @@ public class Node implements INode {
             this.name = config.get("name").asText();
         }
         this.flow = flow;
-        this.updateWires(config.get("wires"));
+        if (config.has("wires")) {
+            this.updateWires(config.get("wires"));
+        }
     }
 
     void updateWires(JsonNode wires) {

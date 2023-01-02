@@ -6,25 +6,39 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.*;
 
 public class Flow {
-    public static Flow create(FlowConfig global, ObjectNode config) {
-        return new Flow(global, config);
+    public static Flow create(Flow parent, ObjectNode global, ObjectNode config) {
+        return new Flow(parent, global, config);
+    }
+    public static Flow create(ObjectNode global) {
+        return new Flow(global);
     }
 
-    FlowConfig global;
+    Flow parent;
+
+    ObjectNode global;
     ObjectNode flow;
     Map<String, INode> activeNodes = new HashMap<>();
-    public Flow(FlowConfig global, ObjectNode flow) {
+
+    Boolean isGlobalFlow;
+    public Flow(ObjectNode global) {
+        this.isGlobalFlow = true;
+        this.global = global;
+        this.flow = global;
+    }
+    public Flow(Flow parent, ObjectNode global, ObjectNode flow) {
+        this.isGlobalFlow = false;
         this.global = global;
         this.flow = flow;
+        this.parent = parent;
     }
 
     public void start() {
-        for (Iterator<String> it = this.flow.get("nodes").fieldNames(); it.hasNext(); ) {
-            String id = it.next();
-            if (this.flow.get("nodes").has(id)) {
-                JsonNode node = this.flow.get("nodes").get(id);
-                if (!node.has("d")) {
-                    if (!node.has("subflow")) {
+        if (this.flow.has("configs")) {
+            for (Iterator<String> it = this.flow.get("configs").fieldNames(); it.hasNext(); ) {
+                String id = it.next();
+                if (this.flow.get("configs").has(id)) {
+                    JsonNode node = this.flow.get("configs").get(id);
+                    if (!node.has("d")) {
                         if (!this.activeNodes.containsKey(id)) {
                             INode newNode = FlowUtil.createNode(this, node);
                             this.activeNodes.put(id, newNode);
@@ -32,7 +46,22 @@ public class Flow {
                     }
                 }
             }
-
+        }
+        if (this.flow.has("nodes")) {
+            for (Iterator<String> it = this.flow.get("nodes").fieldNames(); it.hasNext(); ) {
+                String id = it.next();
+                if (this.flow.get("nodes").has(id)) {
+                    JsonNode node = this.flow.get("nodes").get(id);
+                    if (!node.has("d")) {
+                        if (!node.has("subflow")) {
+                            if (!this.activeNodes.containsKey(id)) {
+                                INode newNode = FlowUtil.createNode(this, node);
+                                this.activeNodes.put(id, newNode);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -62,7 +91,7 @@ public class Flow {
         }
     }
 
-    INode getNode(String id) {
+    public INode getNode(String id) {
         if (id == null) {
             return null;
         }
@@ -75,8 +104,9 @@ public class Flow {
             return this.activeNodes.get(id);
         } else if (this.activeNodes.containsKey(id)) {
             return this.activeNodes.get(id);
+        } else {
+            return this.parent.getNode(id);
         }
-        return null;
     }
 
     public void stop() {
