@@ -30,21 +30,21 @@ public class FlowUtil {
         }
 
         for (ObjectNode n : config) {
-            ((ObjectNode)flow.get("allNodes")).put(n.get("id").asText(), n.deepCopy());
+            ((ObjectNode)flow.get("allNodes")).set(n.get("id").asText(), n.deepCopy());
             if (n.get("type").asText().equals("tab")) {
-                ((ObjectNode)flow.get("flows")).put(n.get("id").asText(), n);
+                ((ObjectNode)flow.get("flows")).set(n.get("id").asText(), n);
                 ((ObjectNode)flow.get("flows").get(n.get("id").asText())).putObject("subflows");
                 ((ObjectNode)flow.get("flows").get(n.get("id").asText())).putObject("configs");
                 ((ObjectNode)flow.get("flows").get(n.get("id").asText())).putObject("nodes");
             }
             if (n.get("type").asText().equals("group")) {
-                ((ObjectNode)flow.get("groups")).put(n.get("id").asText(), n);
+                ((ObjectNode)flow.get("groups")).set(n.get("id").asText(), n);
             }
         }
 
         for (ObjectNode n : config) {
             if (n.get("type").asText().equals("subflow")) {
-                ((ObjectNode)flow.get("subflows")).put(n.get("id").asText(), n);
+                ((ObjectNode)flow.get("subflows")).set(n.get("id").asText(), n);
                 ((ObjectNode)flow.get("subflows").get(n.get("id").asText())).putObject("configs");
                 ((ObjectNode)flow.get("subflows").get(n.get("id").asText())).putObject("nodes");
                 ((ObjectNode)flow.get("subflows").get(n.get("id").asText())).putArray("instances");
@@ -84,7 +84,7 @@ public class FlowUtil {
                     if (container != null) {
                         ((ObjectNode) container.get("configs")).set(n.get("id").asText(), n);
                     } else {
-                        ((ObjectNode)flow.get("configs")).put(n.get("id").asText(), n);
+                        ((ObjectNode)flow.get("configs")).set(n.get("id").asText(), n);
                         ((ObjectNode)(flow.get("configs")).get(n.get("id").asText())).putArray("_users");
                     }
                 }
@@ -127,7 +127,7 @@ public class FlowUtil {
                         tab.putObject("subflows");
                         tab.putObject("configs");
                         tab.putObject("nodes");
-                        ((ObjectNode)flow.get("flows")).put(n.get("z").asText(), tab);
+                        ((ObjectNode)flow.get("flows")).set(n.get("z").asText(), tab);
                         addedTabs.put(n.get("z").asText(), tab);
                     }
                     if (addedTabs.containsKey(n.get("z").asText())) {
